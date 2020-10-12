@@ -75,8 +75,3 @@ def loiSearch(frontierToSearch,searchTerm,caseSensitive=0):
 
     #Return output string
     return line
-    '''
-    #Display top results
-
-
-    '''

@@ -1,15 +1,19 @@
 from flask import Flask, request
+#Function that actually does the searching
 from loiSearcher import loiSearch
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
 
 @app.route("/", methods=["GET", "POST"])
-def adder_page():
+def loiSearch_page():
     errors = ""
+    #Check if we have submitted data
     if request.method == "POST":
+        #Get frontier, search term
         frontierToSearch = request.form["frontierToSearch"]
         searchTerm = request.form["searchTerm"]
+        #Check if the caseSensitive checkbox is included in the request.
         checked = "caseSensitive" in request.form
         if frontierToSearch is not None and searchTerm is not None:
             if checked==1:
@@ -24,6 +28,7 @@ def adder_page():
                     </body>
                 </html>
             '''.format(result=result)
+    #Set up page for user to input data
     return '''
         <html>
             <body>

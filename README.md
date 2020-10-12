@@ -5,4 +5,4 @@ Code running on pythonanywhere: https://shedges.pythonanywhere.com/
 Runs the actual search on the pickled list of LOI text.
 
 # loiSearcher_main.py
-Handles user input.
+Handles user input and what to display.

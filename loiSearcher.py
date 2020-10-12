@@ -1,6 +1,9 @@
 def loiSearch(frontierToSearch,searchTerm,caseSensitive=0):
     import pickle
 
+    #For linking to LOIs
+    mainsite = "http://www.snowmass21.org/docs/files/summaries"
+
     #How many results to show
     nResultsToShow=20
     nPreviewChars=500
@@ -14,6 +17,8 @@ def loiSearch(frontierToSearch,searchTerm,caseSensitive=0):
 
     #Ask user if they want to limit search to a specific frontier
     frontiers=["AF","CF","CommF","CompF","EF","IF","NF","RF","TF","UF"]
+
+    #Remove quotes if user supplied when inputting frontier
     frontierToSearch=frontierToSearch.strip("'")
     frontierToSearch=frontierToSearch.strip('"')
 
@@ -23,13 +28,15 @@ def loiSearch(frontierToSearch,searchTerm,caseSensitive=0):
       loiList = [loiList[i] for i in range(0,len(loiList)) if loiList[i][0]==frontierToSearch]
       frontierFound=1
 
-    #Step through LOIs, searching for word
+    #Step through LOIs, searching for word or phrase
     matchingLOIs=[]
     for loi in loiList:
       if caseSensitive==1:
         nTimes = loi[2].count(searchTerm)
+        caseSensitiveString = "(case-sensitive)"
       else:
         nTimes = loi[2].lower().count(searchTerm.lower())
+        caseSensitiveString = "(case-insensitive)"
       if nTimes>0:
         matchingLOIs.append([loi[0],loi[1],loi[2],nTimes])
 
@@ -41,25 +48,15 @@ def loiSearch(frontierToSearch,searchTerm,caseSensitive=0):
     if len(matchingLOIs)<nResultsToShow:
       nResultsToShow=len(matchingLOIs)
 
-    line=""
+    #Generate output string to display results. Start with number of matching results
+    line="<b>Found "+str(len(matchingLOIs))+" matching LOIS in "
     if frontierFound==1:
-        if caseSensitive==1:
-            line+="<b>Found "+str(len(matchingLOIs))+" matching LOIs in "+frontierToSearch+" frontier for term '"+searchTerm+"' (case-sensitive)</b>\n\n"
-        else:
-            line+="<b>Found "+str(len(matchingLOIs))+" matching LOIs in "+frontierToSearch+" frontier for term '"+searchTerm+"' (case-insensitive)</b>\n\n"
-
+        line += frontierToSearch + " frontier"
     else:
-        if caseSensitive==1:
-            line+="<b>Found "+str(len(matchingLOIs))+" matching LOIs in all frontiers for term '"+searchTerm+"' (case-sensitive)</b>\n\n"
-        else:
-            line+="<b>Found "+str(len(matchingLOIs))+" matching LOIs in all frontiers for term '"+searchTerm+"' (case-insensitive)</b>\n\n"
+        line += " all frontiers"
+    line += " for term '"+searchTerm+"' "+caseSensitiveString+"</b>\n\n"
 
-
-
-    #Close LOIs.pickle
-    mainsite = "http://www.snowmass21.org/docs/files/summaries"
-    f.close()
-
+    #Print search ranking, frontier, pdf title/link, and preview text
     for i in range(0,nResultsToShow):
         #Check there are enough characters to display the intended preview length. If not, shorten how many are displayed.
         if len(matchingLOIs[i][2]) < nPreviewChars:
@@ -70,7 +67,13 @@ def loiSearch(frontierToSearch,searchTerm,caseSensitive=0):
         line += " - " + str(matchingLOIs[i][3]) + " occurrences"+"</b>\n"
         line += matchingLOIs[i][2][0:charsToDisplay]+"...\n\n"
 
+    #Make newlines html breaks
     line = line.replace('\n', '<br>')
+
+    #Close LOIs.pickle
+    f.close()
+
+    #Return output string
     return line
     '''
     #Display top results

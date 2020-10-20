@@ -51,17 +51,18 @@ def loiSearch_page():
 from flask import jsonify
 import pickle
 
-inpFilename="/home/shedges/mysite/LOI_dict.pickle"
-f = open(inpFilename, 'rb')
-
-#Load loiList, {id,frontier,filename,link,text}
-loiList = pickle.load(f)
-
-#List of frontiers
-frontiers=["AF","CF","CommF","CompF","EF","IF","NF","RF","TF","UF"]
-
 @app.route('/search', methods=['GET'])
 def api_id():
+
+    inpFilename="/home/shedges/mysite/LOI_dict.pickle"
+    f = open(inpFilename, 'rb')
+
+    #Load loiList, {id,frontier,filename,link,text}
+    loiList = pickle.load(f)
+
+    #List of frontiers
+    frontiers=["AF","CF","CommF","CompF","EF","IF","NF","RF","TF","UF"]
+
     #We don't want to modify the list if we restrict to a frontier,
     #so make a copy of it
     localList=loiList
@@ -103,12 +104,16 @@ def api_id():
         nTimes = loi['text'].lower().count(term.lower())
         if nTimes>0:
           loi['nTimes']=str(nTimes)
+          del loi['text']
+          del loi['id']
           results.append(loi)
 
 
     #Sort by number of occurrences of the search word
     results.sort(key = lambda x: int(x['nTimes']))
     results.reverse()
+
+    f.close()
 
     # Use the jsonify function from Flask to convert our list of
     # Python dictionaries to the JSON format.
